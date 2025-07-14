@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { FaGithub, FaPlus } from 'react-icons/fa'
+import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa'
 import * as S from './style'
 import { getRepositories } from '../../services/apis'
 
@@ -18,14 +18,18 @@ type RepoData = {
 export const Home = () => {
     const { register, handleSubmit } = useForm<FormData>();
     const [repoData, setRepoData] = useState<RepoData | null>(null);
+    const [loading, setLoading] = useState(false);
 
     const onSubmit = async (data: FormData) => {
+        setLoading(true);
         try {
             const repositoryData = await getRepositories(data.repository);
             setRepoData(repositoryData);
         } catch (error) {
             console.error('Error fetching repository:', error);
             setRepoData(null);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -40,7 +44,9 @@ export const Home = () => {
                         placeholder="Adicionar Repositórios"
                         {...register('repository', { required: true })}
                     />
-                    <S.Button type="submit"><FaPlus color='#fff' size={14} /></S.Button>
+                    <S.Button loading={loading} type="submit">
+                        {loading ? <FaSpinner color="#fff" size={14} /> : <FaPlus color="#fff" size={14} />}
+                    </S.Button>
                 </S.Form>
 
                 {repoData && (

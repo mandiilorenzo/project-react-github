@@ -1,4 +1,9 @@
-import styled from "styled-components";
+import styled, { keyframes, css } from "styled-components";
+
+interface ButtonProps {
+    loading?: boolean;
+}
+
 
 export const Container = styled.div`
     max-width: 700px;
@@ -32,7 +37,19 @@ export const Form = styled.form`
     }
 `
 
-export const Button = styled.button`
+const animate = keyframes`
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+`
+
+export const Button = styled.button.attrs<ButtonProps>(props => ({
+    disabled: props.loading ?? false,
+}))<ButtonProps>`
     background-color: #0d2636;
     border: none;
     border-radius: 4px;
@@ -41,4 +58,15 @@ export const Button = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    ${props => props.loading && css`
+        svg {
+            animation: ${animate} 2s linear infinite;
+        }
+    `}
 `
