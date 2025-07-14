@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { FaGithub, FaPlus, FaSpinner } from 'react-icons/fa'
+import { FaGithub, FaPlus, FaSpinner, FaBars, FaTrash } from 'react-icons/fa'
 import * as S from './style'
 import { getRepositories } from '../../services/apis'
 
@@ -10,27 +10,34 @@ type FormData = {
 
 type RepoData = {
     full_name: string;
-    description: string;
     html_url: string;
 };
 
 
 export const Home = () => {
     const { register, handleSubmit } = useForm<FormData>();
-    const [repoData, setRepoData] = useState<RepoData | null>(null);
+    const [repoData, setRepoData] = useState<RepoData[]>([]);
     const [loading, setLoading] = useState(false);
 
     const onSubmit = async (data: FormData) => {
         setLoading(true);
         try {
             const repositoryData = await getRepositories(data.repository);
-            setRepoData(repositoryData);
+
+            const alreadyExists = repoData.some(repo => repo.full_name === repositoryData.full_name);
+            if (!alreadyExists) {
+                setRepoData(prev => [...prev, repositoryData]);
+            }
+
         } catch (error) {
             console.error('Error fetching repository:', error);
-            setRepoData(null);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDelete = (repoName: string) => {
+        setRepoData(prev => prev.filter(repo => repo.full_name !== repoName));
     };
 
 
@@ -49,13 +56,15 @@ export const Home = () => {
                     </S.Button>
                 </S.Form>
 
-                {repoData && (
-                    <div style={{ marginTop: '20px' }}>
-                        <h3>{repoData.full_name}</h3>
-                        <p>{repoData.description}</p>
-                        <a href={repoData.html_url} target="_blank" rel="noreferrer">Ver no GitHub</a>
-                    </div>
-                )}
+                <S.List>
+                    {repoData.map(repo => (
+                        <li key={repo.full_name}>
+                            <S.DeleteButton onClick={() => handleDelete(repo.full_name)}> <FaTrash size={14}/></S.DeleteButton>
+                            <h3>{repo.full_name}</h3>
+                            <a href={repo.html_url} target="_blank" rel="noreferrer"><FaBars size={20} /></a>
+                        </li>
+                    ))}
+                </S.List>
             </S.Container>
         </main>
     )

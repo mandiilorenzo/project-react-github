@@ -8,6 +8,9 @@ interface ButtonProps {
 export const Container = styled.div`
     max-width: 700px;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding: 30px;
     margin: 80px auto;
     border-radius: 4px;
@@ -69,4 +72,35 @@ export const Button = styled.button.attrs<ButtonProps>(props => ({
             animation: ${animate} 2s linear infinite;
         }
     `}
+`
+
+export const DeleteButton = styled.button`
+    background-color: transparent;
+    color: #0d2636;
+    border: none;
+    padding: 8px 7px;
+`
+
+export const List = styled.ul`
+    margin-top: 20px;
+
+    li {
+        padding: 15px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #DDD;
+
+        h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        a {
+            color: #0d2636;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    }
 `
